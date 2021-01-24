@@ -38,31 +38,31 @@ function preload(){
 }
 
 function setup() {
-  createCanvas(600, 200);
+  createCanvas(windowWidth, windowHeight);
   
 
-  trex = createSprite(50,180,20,50);
+  trex = createSprite(50,windowHeight-20,20,50);
   
   trex.addAnimation("running", trex_running);
   trex.addAnimation("collided", trex_collided);
   
 
-  trex.scale = 0.5;
+  trex.scale = 1;
   
-  ground = createSprite(200,180,400,20);
+  ground = createSprite(windowWidth/2, windowHeight-20 ,windowWidth,20);
   ground.addImage("ground",groundImage);
   ground.x = ground.width /2;
   
-  gameOver = createSprite(300,100);
+  gameOver = createSprite(windowWidth/2,windowHeight/2);
   gameOver.addImage(gameOverImg);
   
-  restart = createSprite(300,140);
+  restart = createSprite(windowWidth/2, windowHeight/2 + 50);
   restart.addImage(restartImg);
   
-  gameOver.scale = 0.5;
-  restart.scale = 0.5;
+  gameOver.scale = 1;
+  restart.scale = 1;
   
-  invisibleGround = createSprite(200,190,400,10);
+  invisibleGround = createSprite(windowWidth/2, windowHeight - 10,windowWidth,10);
   invisibleGround.visible = false;
   
   //create Obstacle and Cloud Groups
@@ -92,7 +92,7 @@ function draw() {
     //change the trex animation
       trex.changeAnimation("running", trex_running);
     
-    ground.velocityX = -(4 + 3* score/100)
+    ground.velocityX = -(8 + 3* score/100)
     //scoring
     score = score + Math.round(getFrameRate()/60);
     
@@ -105,9 +105,10 @@ function draw() {
     }
     
     //jump when the space key is pressed
-    if(keyDown("space")&& trex.y >= 160) {
-        trex.velocityY = -12;
+    if(touches.length > 0 ||keyDown("space")&& trex.y >= 160) {
+        trex.velocityY = -15;
         jumpSound.play();
+      touches = []
     }
     
     //add gravity
@@ -153,22 +154,23 @@ function draw() {
      }
    }
  
-  if(mousePressedOver(restart)){
+  if(touches.length>0||mousePressedOver(restart)){
     reset();
+    touches = []
   }
  
   //stop trex from falling down
   trex.collide(invisibleGround);
-  if(score>500 && score<1050){
+  if((score>300 && score<500)||(score>800 && score<1100)){
     fill("white")
     background(110);
   }
 
   drawSprites();
   
-  textSize(18);
+  textSize(30);
   
-  text("Highscore: "+highscore+"    Score: "+ score, 300,50);
+  text("Highscore: "+highscore+"    Score: "+ score, windowWidth /2,50);
 }
 
 function reset(){
@@ -183,8 +185,8 @@ function reset(){
 
 function spawnObstacles(){
  if (frameCount % 60 === 0){
-   var obstacle = createSprite(600,165,10,40);
-   obstacle.velocityX = -(6 + score/100);
+   var obstacle = createSprite(windowWidth,windowHeight - 35,10,40);
+   obstacle.velocityX = -(8 + score/100);
    
     //generate random obstacles
     var rand = Math.round(random(1,6));
@@ -205,8 +207,8 @@ function spawnObstacles(){
     }
    
     //assign scale and lifetime to the obstacle           
-    obstacle.scale = 0.5;
-    obstacle.lifetime = 300;
+    obstacle.scale = 1;
+    obstacle.lifetime = windowWidth/2;
    
    //add each obstacle to the group
     obstaclesGroup.add(obstacle);
@@ -216,14 +218,14 @@ function spawnObstacles(){
 function spawnClouds() {
   //write code here to spawn the clouds
  if (frameCount % 60 === 0) {
-    var cloud = createSprite(600,120,40,10);
-    cloud.y = Math.round(random(80,120));
+    var cloud = createSprite(windowWidth,120,40,10);
+    cloud.y = Math.round(random(windowHeight/2 -100,windowHeight/2 + 100));
     cloud.addImage(cloudImage);
-    cloud.scale = 0.5;
+    cloud.scale = 1;
     cloud.velocityX = -3;
     
      //assign lifetime to the variable
-    cloud.lifetime = 200;
+    cloud.lifetime = windowWidth/2;
     
     //adjust the depth
     cloud.depth = trex.depth;
